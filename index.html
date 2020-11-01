@@ -1,0 +1,101 @@
+import java.io.*;
+import java.util.*;
+public class Concordance {
+
+    public static void main(String[] args) throws IOException {
+        Concordance ccdd = new Concordance();
+
+        File file = new File("paragraph.txt");
+        Scanner scc = new Scanner(file);
+
+        Map<String, List<Token>> cc = new TreeMap<>();
+
+        while(scc.hasNext()) {
+            ccdd.add(file, cc, scc);
+        }
+        ccdd.toString(cc);
+    }
+
+    private static void add(File f, Map<String, List<Token>> m, Scanner s) throws IOException {
+        Tokenizer tk = new Tokenizer(f, s);
+        Token t;
+        int counter= 0;
+        //while tokenizer hasNext, get the next word & add the word, & the array list of the string indexes to the map
+
+        while( tk.hasNext() ) {
+            counter++;
+            t = tk.next(f, counter);
+            if(m.containsKey(t.getWord()) ) {
+                m.put(t.getWord(), tk.getUpdatedList(counter, t));
+            }
+            else {
+                m.put(t.getWord(), tk.getList());
+            }
+        }
+    }
+    public void toString(Map<String, List<Token>> ccd) {
+        ccd.forEach((key, value) -> System.out.println(key + ": " + value));
+        //for(String word: ccd.keySet())
+           // System.out.println(word + "\t");
+    }
+    //private int count(String str, Map<String, Integer> m ){}
+
+    /**********************************/
+    private static class Tokenizer {
+        Scanner sc;
+        Token tn;
+        int pointer = 0;
+        ArrayList<Token> strList = new ArrayList<>();
+
+        // opens the file
+        public Tokenizer(File file, Scanner ss) throws  IOException {
+            sc = ss;
+        }
+        // reads a word and sends the file, counter, and word to make a token
+        //returns the token just made
+        public Token next(File file, int i) {
+            pointer++;
+            String str;
+            str = sc.next();
+            tn = new Token(file, i, str);
+            return tn;
+        }
+
+        ArrayList<Token> getUpdatedList(int c, Token t){
+            t.getWordIndexes().add(c);
+            return strList;
+        }
+        ArrayList<Token> getList() { return strList; }
+
+        //returns if the scanner has a next
+        public boolean hasNext() {
+            return sc.hasNext();
+        }
+    }
+
+    /**********************************/
+    private static class Token {
+        String file;
+        private String word;
+        ArrayList<Integer> wordIndexes = new ArrayList<>();
+
+        //sets the file, word, and word index
+        private Token(File f, int c, String s){
+            file = f.toString();
+            word = s;
+            wordIndexes.add(c);
+        }
+
+        String getWord(){
+            return word;
+        }
+
+        ArrayList<Integer> getWordIndexes() { return wordIndexes; }
+
+        public String toString(){
+            String t = getWord() +" "+getWordIndexes();
+            return t;
+        }
+    }
+
+}
